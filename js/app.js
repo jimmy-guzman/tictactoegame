@@ -23,7 +23,16 @@ const grid = [
   { num: 7, placed: false },
   { num: 8, placed: false }
 ];
-
+const winConds = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+];
 const boxesArr = Array.from(boxes);
 
 function playerTurn() {
@@ -67,6 +76,17 @@ function computerTurn() {
   }
 }
 
+function computerAi() {
+  let currentPlaced = grid
+    .filter(box => box.who === "player")
+    .map(el => el.num);
+  winConds.forEach(cond => {
+    if (cond.some(elem => currentPlaced.indexOf(elem) !== -1)) {
+      console.log(cond);
+    }
+  });
+}
+
 function randomBox() {
   const rbox = Math.floor(Math.random() * 9);
   if (!grid.every(box => box.placed)) {
@@ -77,31 +97,22 @@ function randomBox() {
 
 function checkIfWon(who) {
   let result = false;
-  const winConds = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
-  ];
   let currentPlaced = grid.filter(box => box.who === who).map(el => el.num);
-  if (turnCount === 9) {
-    result = true;
-    gameEnd("draw");
-  } else {
-    if (currentPlaced.length > 2) {
-      winConds.forEach(cond => {
-        if (cond.every(elem => currentPlaced.indexOf(elem) !== -1)) {
-          result = true;
-          gameEnd(who);
-          return;
-        }
-      });
-    }
+
+  if (currentPlaced.length > 2) {
+    winConds.forEach(cond => {
+      if (cond.every(elem => currentPlaced.indexOf(elem) !== -1)) {
+        result = true;
+        gameEnd(who);
+        return;
+      } else if (turnCount === 9) {
+        result = true;
+        gameEnd("draw");
+        return;
+      }
+    });
   }
+
   return result;
 }
 
@@ -116,7 +127,7 @@ function gameEnd(result) {
   gameEndScreen.style.display = "block";
   if (result !== "draw") {
     statusScreen.children[0].textContent = "The " + result + " won!";
-    (result === "player") ? playerScore++ : computerScore++;
+    result === "player" ? playerScore++ : computerScore++;
     updateScoreboard();
   } else {
     statusScreen.children[0].textContent = "It's a draw!";
@@ -150,9 +161,9 @@ function resetGame() {
     boxes.forEach(box => (box.children[0].textContent = ""));
     selectionScreen.style.display = "block";
     grid.forEach(box => {
-        box.placed = false;
-        delete box.who
-    })
+      box.placed = false;
+      delete box.who;
+    });
   }
 }
 marks.forEach(mark => mark.addEventListener("click", startGame));
