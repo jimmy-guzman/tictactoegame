@@ -15,6 +15,7 @@ let computerScore = 0;
 let playerScore = 0;
 
 function playerTurn() {
+
   boxes.forEach(box =>
     box.addEventListener("click", function() {
       var box = boxesArr.indexOf(this);
@@ -25,8 +26,9 @@ function playerTurn() {
           !winning(origBoard, huPlayer) &&
           emptyIndexies(origBoard).length !== 0
         ) {
+          statusScreen.children[0].textContent = "The computer's turn";
           isPlayerTurn = false;
-          computerTurn();
+          setTimeout(computerTurn, 300);
         } else {
           gameEnd();
         }
@@ -40,6 +42,7 @@ function computerTurn() {
   origBoard[bestBox] = aiPlayer;
   boxes[bestBox].children[0].textContent = aiPlayer;
   if (!winning(origBoard, aiPlayer) && emptyIndexies(origBoard).length !== 0) {
+    statusScreen.children[0].textContent = "The player's turn";
     isPlayerTurn = true;
     playerTurn();
   } else {
@@ -81,7 +84,7 @@ function startGame() {
     huPlayer = "O";
     aiPlayer = "X";
     statusScreen.children[0].textContent = "The computer's turn";
-    computerTurn();
+     setTimeout(computerTurn, 300);
   }
 }
 
