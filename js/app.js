@@ -6,50 +6,29 @@ const statusScreen = document.querySelector(".status-screen");
 const gameEndScreen = document.querySelector(".game-end-screen");
 const nextButtons = document.querySelectorAll("[data-next]");
 
-let markChosen = "X";
-let turnCount = 0;
-let isPlayerTurn = false;
-let playerScore = 0;
-let computerScore = 0;
-
-const grid = [
-  { num: 0, placed: false },
-  { num: 1, placed: false },
-  { num: 2, placed: false },
-  { num: 3, placed: false },
-  { num: 4, placed: false },
-  { num: 5, placed: false },
-  { num: 6, placed: false },
-  { num: 7, placed: false },
-  { num: 8, placed: false }
-];
-const winConds = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-];
 const boxesArr = Array.from(boxes);
+let huPlayer = "X";
+let aiPlayer = "O";
+let origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+let isPlayerTurn = false;
+let computerScore = 0;
+let playerScore = 0;
 
 function playerTurn() {
-  let result = false;
   boxes.forEach(box =>
     box.addEventListener("click", function() {
-      const box = boxesArr.indexOf(this);
-      if (!grid[box].placed && isPlayerTurn) {
+      var box = boxesArr.indexOf(this);
+      if (origBoard[box] !== huPlayer && isPlayerTurn) {
         this.children[0].textContent = markChosen;
-        grid[box].placed = true;
-        grid[box].who = "player";
-        turnCount++;
-        if (!checkIfWon("player") && !checkIfTie()) {
-          statusScreen.children[0].textContent = "The computer's turn";
-          setTimeout(computerTurn, 300);
-        } else {
+        origBoard[box] = huPlayer;
+        if (
+          !winning(origBoard, huPlayer) &&
+          emptyIndexies(origBoard).length !== 0
+        ) {
           isPlayerTurn = false;
+          computerTurn();
+        } else {
+          gameEnd();
         }
       }
     })
@@ -57,66 +36,15 @@ function playerTurn() {
 }
 
 function computerTurn() {
-  let result = false;
-  const box = randomBox();
-  grid[box].placed = true;
-  grid[box].who = "computer";
-  markChosen === "X"
-    ? (boxes[box].children[0].textContent = "O")
-    : (boxes[box].children[0].textContent = "X");
-  turnCount++;
-  if (!checkIfWon("computer") && !checkIfTie()) {
-    statusScreen.children[0].textContent = "The player's turn";
+  let bestBox = minimax(origBoard, aiPlayer).index;
+  origBoard[bestBox] = aiPlayer;
+  boxes[bestBox].children[0].textContent = aiPlayer;
+  if (!winning(origBoard, aiPlayer) && emptyIndexies(origBoard).length !== 0) {
     isPlayerTurn = true;
     playerTurn();
   } else {
-    isPlayerTurn = false;
+    gameEnd();
   }
-}
-
-function computerAi() {
-  let currentPlaced = grid
-    .filter(box => box.who === "player")
-    .map(el => el.num);
-  winConds.forEach(cond => {
-    if (cond.some(elem => currentPlaced.indexOf(elem) !== -1)) {
-      console.log(cond);
-    }
-  });
-}
-
-function randomBox() {
-  const rbox = Math.floor(Math.random() * 9);
-  if (!grid.every(box => box.placed)) {
-    if (grid[rbox].placed) return randomBox();
-  }
-  return rbox;
-}
-
-function checkIfWon(who) {
-  let result = false;
-  let currentPlaced = grid.filter(box => box.who === who).map(el => el.num);
-
-  if (currentPlaced.length > 2) {
-    winConds.forEach(cond => {
-      if (cond.every(elem => currentPlaced.indexOf(elem) !== -1)) {
-        result = true;
-        gameEnd(who);
-        return;
-      }
-    });
-  }
-  return result;
-}
-
-function checkIfTie() {
-  let result = false;
-  let emptyBoxes = grid.filter(box => !box.placed).map(el => el.num).length;
-  if (emptyBoxes === 0 && !checkIfWon("computer") && !checkIfWon("player")) {
-    gameEnd("draw");
-    result = true;
-  }
-  return result;
 }
 
 function updateScoreboard() {
@@ -126,31 +54,34 @@ function updateScoreboard() {
   computer.textContent = computerScore;
 }
 
-function gameEnd(result) {
+function gameEnd() {
   gameEndScreen.style.display = "block";
-  if (result !== "draw") {
-    statusScreen.children[0].textContent = "The " + result + " won!";
-    result === "player" ? playerScore++ : computerScore++;
-    updateScoreboard();
+  if (winning(origBoard, huPlayer)) {
+    playerScore++;
+    statusScreen.children[0].textContent = "You Won!";
+  } else if (winning(origBoard, aiPlayer)) {
+    computerScore++;
+    statusScreen.children[0].textContent = "The computer won!";
   } else {
     statusScreen.children[0].textContent = "It's a draw!";
   }
+  updateScoreboard();
 }
 
 function startGame() {
-  turnCount = 0;
   markChosen = this.dataset.mark;
   selectionScreen.style.display = "none";
   game.style.display = "flex";
   statusScreen.style.display = "block";
   if (markChosen === "X") {
-    console.log("start player");
     statusScreen.children[0].textContent = "The player's turn";
     isPlayerTurn = true;
     playerTurn();
   } else {
+    huPlayer = "O";
+    aiPlayer = "X";
     statusScreen.children[0].textContent = "The computer's turn";
-    setTimeout(computerTurn, 300);
+    computerTurn();
   }
 }
 
@@ -163,35 +94,39 @@ function resetGame() {
     statusScreen.style.display = "none";
     boxes.forEach(box => (box.children[0].textContent = ""));
     selectionScreen.style.display = "block";
-    grid.forEach(box => {
-      box.placed = false;
-      delete box.who;
-    });
+    origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   }
 }
-marks.forEach(mark => mark.addEventListener("click", startGame));
-nextButtons.forEach(button => button.addEventListener("click", resetGame));
 
-function bestSpot() {
-  return minimax(orgBoard, aiPlayer).index;
-}
-
+// var fc = 0;
+// the main minimax function
 function minimax(newBoard, player) {
-  var availSpots = grid.filter(box => !box.placed);
-
-  if (checkWin(newBoard, huPlayer)) {
+  //keep track of function calls;
+  // fc++;
+  //available spots
+  var availSpots = emptyIndexies(newBoard);
+  // checks for the terminal states such as win, lose, and tie and returning a value accordingly
+  if (winning(newBoard, huPlayer)) {
     return { score: -10 };
-  } else if (checkWin(newBoard, aiPlayer)) {
+  } else if (winning(newBoard, aiPlayer)) {
     return { score: 10 };
   } else if (availSpots.length === 0) {
     return { score: 0 };
   }
+
+  // an array to collect all the objects
   var moves = [];
+
+  // loop through available spots
   for (var i = 0; i < availSpots.length; i++) {
+    //create an object for each and store the index of that spot that was stored as a number in the object's index key
     var move = {};
     move.index = newBoard[availSpots[i]];
+
+    // set the empty spot to the current player
     newBoard[availSpots[i]] = player;
 
+    //if collect the score resulted from calling minimax on the opponent of the current player
     if (player == aiPlayer) {
       var result = minimax(newBoard, huPlayer);
       move.score = result.score;
@@ -200,11 +135,14 @@ function minimax(newBoard, player) {
       move.score = result.score;
     }
 
+    //reset the spot to empty
     newBoard[availSpots[i]] = move.index;
 
+    // push the object to the array
     moves.push(move);
   }
 
+  // if it is the computer's turn loop over the moves and choose the move with the highest score
   var bestMove;
   if (player === aiPlayer) {
     var bestScore = -10000;
@@ -215,6 +153,7 @@ function minimax(newBoard, player) {
       }
     }
   } else {
+    // else loop over the moves and choose the move with the lowest score
     var bestScore = 10000;
     for (var i = 0; i < moves.length; i++) {
       if (moves[i].score < bestScore) {
@@ -224,5 +163,33 @@ function minimax(newBoard, player) {
     }
   }
 
+  // return the chosen move (object) from the array to the higher depth
+
   return moves[bestMove];
 }
+
+// returns the available spots on the board
+function emptyIndexies(board) {
+  return board.filter(s => s != "O" && s != "X");
+}
+
+// winning combinations using the board indexies for instace the first win could be 3 xes in a row
+function winning(board, player) {
+  if (
+    (board[0] == player && board[1] == player && board[2] == player) ||
+    (board[3] == player && board[4] == player && board[5] == player) ||
+    (board[6] == player && board[7] == player && board[8] == player) ||
+    (board[0] == player && board[3] == player && board[6] == player) ||
+    (board[1] == player && board[4] == player && board[7] == player) ||
+    (board[2] == player && board[5] == player && board[8] == player) ||
+    (board[0] == player && board[4] == player && board[8] == player) ||
+    (board[2] == player && board[4] == player && board[6] == player)
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+marks.forEach(mark => mark.addEventListener("click", startGame));
+nextButtons.forEach(button => button.addEventListener("click", resetGame));
