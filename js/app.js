@@ -45,8 +45,7 @@ function playerTurn() {
         grid[box].placed = true;
         grid[box].who = "player";
         turnCount++;
-        result = checkIfWon("player");
-        if (!result) {
+        if (!checkIfWon("player") && !checkIfTie()) {
           statusScreen.children[0].textContent = "The computer's turn";
           setTimeout(computerTurn, 300);
         } else {
@@ -66,8 +65,7 @@ function computerTurn() {
     ? (boxes[box].children[0].textContent = "O")
     : (boxes[box].children[0].textContent = "X");
   turnCount++;
-  result = checkIfWon("computer");
-  if (!result) {
+  if (!checkIfWon("computer") && !checkIfTie()) {
     statusScreen.children[0].textContent = "The player's turn";
     isPlayerTurn = true;
     playerTurn();
@@ -105,14 +103,19 @@ function checkIfWon(who) {
         result = true;
         gameEnd(who);
         return;
-      } else if (turnCount === 9) {
-        result = true;
-        gameEnd("draw");
-        return;
       }
     });
   }
+  return result;
+}
 
+function checkIfTie() {
+  let result = false;
+  let emptyBoxes = grid.filter(box => !box.placed).map(el => el.num).length;
+  if (emptyBoxes === 0 && !checkIfWon("computer") && !checkIfWon("player")) {
+    gameEnd("draw");
+    result = true;
+  }
   return result;
 }
 
@@ -168,3 +171,58 @@ function resetGame() {
 }
 marks.forEach(mark => mark.addEventListener("click", startGame));
 nextButtons.forEach(button => button.addEventListener("click", resetGame));
+
+function bestSpot() {
+  return minimax(orgBoard, aiPlayer).index;
+}
+
+function minimax(newBoard, player) {
+  var availSpots = grid.filter(box => !box.placed);
+
+  if (checkWin(newBoard, huPlayer)) {
+    return { score: -10 };
+  } else if (checkWin(newBoard, aiPlayer)) {
+    return { score: 10 };
+  } else if (availSpots.length === 0) {
+    return { score: 0 };
+  }
+  var moves = [];
+  for (var i = 0; i < availSpots.length; i++) {
+    var move = {};
+    move.index = newBoard[availSpots[i]];
+    newBoard[availSpots[i]] = player;
+
+    if (player == aiPlayer) {
+      var result = minimax(newBoard, huPlayer);
+      move.score = result.score;
+    } else {
+      var result = minimax(newBoard, aiPlayer);
+      move.score = result.score;
+    }
+
+    newBoard[availSpots[i]] = move.index;
+
+    moves.push(move);
+  }
+
+  var bestMove;
+  if (player === aiPlayer) {
+    var bestScore = -10000;
+    for (var i = 0; i < moves.length; i++) {
+      if (moves[i].score > bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  } else {
+    var bestScore = 10000;
+    for (var i = 0; i < moves.length; i++) {
+      if (moves[i].score < bestScore) {
+        bestScore = moves[i].score;
+        bestMove = i;
+      }
+    }
+  }
+
+  return moves[bestMove];
+}
