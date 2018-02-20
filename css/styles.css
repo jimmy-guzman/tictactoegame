@@ -8,10 +8,10 @@ body {
   color: #f3f2f2;
   font-family: "Indie Flower", cursive;
   text-align: center;
-  display: flex;
+  /* display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100vh;
+  height: 100vh; */
 }
 
 h1,
@@ -94,4 +94,8 @@ p {
 a {
     text-decoration: none;
     color: #608579;
+}
+
+.footer{
+    margin-top: 3em;
 }

@@ -116,7 +116,7 @@ function gameEnd(result) {
   gameEndScreen.style.display = "block";
   if (result !== "draw") {
     statusScreen.children[0].textContent = "The " + result + " won!";
-    (result = "player") ? playerScore++ : computerScore++;
+    (result === "player") ? playerScore++ : computerScore++;
     updateScoreboard();
   } else {
     statusScreen.children[0].textContent = "It's a draw!";
