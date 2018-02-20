@@ -1,58 +1,89 @@
-@import url('https://fonts.googleapis.com/css?family=Indie+Flower');
+@import url("https://fonts.googleapis.com/css?family=Indie+Flower");
+@import url("https://fonts.googleapis.com/css?family=Oswald");
+* {
+  box-sizing: border-box;
+}
 body {
-    background: #272A2B;
-    color: #F3F2F2;
-    font-family: 'Indie Flower', cursive;
+  background: #272a2b;
+  color: #f3f2f2;
+  font-family: "Indie Flower", cursive;
+  text-align: center;
 }
 
+h1,
+h2,
+p {
+  margin: 0;
+}
 .container {
-    width: 50%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  width: 50%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .scoreboard {
-    text-align: right;
-    width: 100%;
-    margin-bottom: 2em;
+  display: block;
+  text-align: right;
+  width: 100%;
+  margin-bottom: 2em;
 }
 
-
+.score {
+  font-size: 48px;
+}
 .game {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    width:400px;
-    height:400px;
-
-    margin:  0 auto;
+  display: none;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 400px;
+  height: 400px;
+  margin: 2em auto;
 }
 
 .box {
-    width: 33%;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+  width: 33%;
+  height: 34%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 
 .box:nth-child(-n + 6) {
-    border-bottom: 2px solid #F3F2F2;
+  border-bottom: 2px solid rgba(243, 242, 242, 0.5);
 }
 
-.box:nth-child(3n-8), .box:nth-child(3n-7) {
-    border-right: 2px solid #F3F2F2;
-}
-
-.box:hover {
-    opacity:.5;
+.box:nth-child(3n-8),
+.box:nth-child(3n-7) {
+  border-right: 2px solid rgba(243, 242, 242, 0.5);
 }
 
 .mark {
-    display: block;
-    font-size: 52px;
+  display: block;
+  font-size: 52px;
+  width: 28px;
+}
+
+.status-screen {
+  display: none;
+  margin: 0 auto;
+}
+
+.selection-screen {
+  display: block;
+  margin: 3em auto;
+  font-size: 48px;
+}
+
+.selection-screen span:hover, [data-next]:hover {
+  cursor: pointer;
+  color: #608579;
+}
+
+.game-end-screen {
+    display: none;
 }
 
