@@ -179,4 +179,4 @@ function checkIfWon(board, player) {
 }
 
 marks.forEach(mark => mark.addEventListener("click", startGame));
-nextButtons.addEventListener("click", resetGame);
+playAgain.addEventListener("click", resetGame);
