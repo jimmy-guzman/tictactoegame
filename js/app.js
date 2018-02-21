@@ -103,11 +103,9 @@ function resetGame() {
   }
 }
 
-// the main minimax function
 function minimax(newBoard, player) {
-  //available spots
   const availSpots = availableSpots(newBoard);
-  // checks for the terminal states such as win, lose, and tie and returning a value accordingly
+
   if (checkIfWon(newBoard, huPlayer)) {
     return { score: -10 };
   } else if (checkIfWon(newBoard, aiPlayer)) {
@@ -168,7 +166,7 @@ function minimax(newBoard, player) {
 }
 
 function availableSpots(board) {
-  return board.filter(s => s != "O" && s != "X");
+  return board.filter(spot => spot != "O" && spot != "X");
 }
 
 function checkIfWon(board, player) {
