@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css?family=Indie+Flower");
-@import url("https://fonts.googleapis.com/css?family=Oswald");
 * {
   box-sizing: border-box;
 }
@@ -95,10 +94,6 @@ p {
 a {
   text-decoration: none;
   color: #608579;
-}
-
-.footer {
-  margin-top: 3em;
 }
 
 @media (min-width: 768px) {

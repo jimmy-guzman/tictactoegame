@@ -4,7 +4,7 @@ const selectionScreen = document.querySelector(".selection-screen");
 const game = document.querySelector(".game");
 const statusScreen = document.querySelector(".status-screen");
 const gameEndScreen = document.querySelector(".game-end-screen");
-const nextButtons = document.querySelectorAll("[data-next]");
+const playAgain = document.querySelector("[data-next]");
 
 const boxesArr = Array.from(boxes);
 let huPlayer = "X";
@@ -91,16 +91,12 @@ function startGame() {
 }
 
 function resetGame() {
-  if (this.dataset.next === "no") {
-    gameEndScreen.style.display = "none";
-  } else {
     gameEndScreen.style.display = "none";
     game.style.display = "none";
     statusScreen.style.display = "none";
     boxes.forEach(box => (box.children[0].textContent = ""));
     selectionScreen.style.display = "block";
     origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  }
 }
 
 function minimax(newBoard, player) {
@@ -183,4 +179,4 @@ function checkIfWon(board, player) {
 }
 
 marks.forEach(mark => mark.addEventListener("click", startGame));
-nextButtons.forEach(button => button.addEventListener("click", resetGame));
+nextButtons.addEventListener("click", resetGame);
