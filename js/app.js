@@ -18,7 +18,7 @@ function playerTurn() {
   boxes.forEach(box =>
     box.addEventListener("click", function() {
       const box = boxesArr.indexOf(this);
-      if (origBoard[box] !== huPlayer && isPlayerTurn) {
+      if (origBoard[box] !== huPlayer && origBoard[box] !== aiPlayer&& isPlayerTurn) {
         this.children[0].textContent = markChosen;
         origBoard[box] = huPlayer;
         if (

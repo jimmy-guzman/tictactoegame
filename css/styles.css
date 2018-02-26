@@ -22,7 +22,7 @@ p {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   flex: 1;
 }
 
@@ -81,11 +81,22 @@ p {
   font-size: 48px;
 }
 
-.selection-screen span:hover,
-[data-next]:hover {
+button:hover, .selection-screen span:hover {
   cursor: pointer;
   color: #608579;
 }
+
+button {
+  border: none;
+  outline: none;
+  font-size: 32px;
+  font-weight: bold;
+  background: transparent;
+  color: #f3f2f2;
+  font-family: "Indie Flower", cursive;
+}
+
+
 
 .game-end-screen {
   display: none;
